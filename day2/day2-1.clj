@@ -14,7 +14,7 @@
   (->> (split-lines s)
        (map #(re-seq #"\d+ .|\d+" %))
        (map #(map-indexed parse-string %))
-       (map #(if (some evaluator (drop 1 %)) 0 (first %)))
+       (map #(if (some evaluator (rest %)) 0 (first %)))
        (reduce +)))
 
 (defn parse-string [i f]

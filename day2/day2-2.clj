@@ -2,7 +2,7 @@
   (:require [clojure.string :refer [split-lines]]))
 
 (declare
- foo
+ string->map
  split-num-key
  str-to-num)
 
@@ -10,19 +10,19 @@
 
 (defn -main []
   (->> (split-lines s)
-       (map #(re-seq #"\d+ .|;" %))
-       (map foo)))
+       (map #(re-seq #"\d+ ." %))
+       (map #(vals (string->map %)))
+       (map #(reduce * %))
+       (reduce +)))
 
-(defn foo [coll]
-  (loop [col coll c (hash-map :r 0, :g 0, :b 0)]
-    (if (or (= (first col) ";") (= (first col) nil))
-      c
+(defn string->map [coll]
+  (loop [col coll base (hash-map :r 0 :g 0 :b 0)]
+    (if (nil? (first col))
+      base
       (recur (drop 1 col)
-             ((merge-with max
-                          (split-num-key (first col))
-                          c))))))
-
-(foo '("2 r" ";" "3 r" "4 b" "9 g"))
+             (merge-with max
+                         (split-num-key (first col))
+                         base)))))
 
 (defn split-num-key [s]
   (hash-map (keyword (str (last s))) (str-to-num s)))

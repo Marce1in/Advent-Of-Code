@@ -3,37 +3,41 @@
 
 (declare
  filter-chars-with-index
- map-matrix-indexed
+ mapv-matrix-indexed
  digit?
  between?
  agroup-neighbors-indexes
  idx-are-neighbors?
- filter-digits-neighbors-to-symbols
+ agroup-digits-neighbors-to-symbols
  symbol-adjacent?)
 
-(def s (slurp "example"))
+(def s (slurp "input"))
 
 (defn -main []
   (let [char-matrix (mapv vec (split-lines s))
         symbols (filter-chars-with-index
-                 #(= % \*)
-                 char-matrix)]
-    (->> char-matrix
-         (filter-chars-with-index digit?)
-         (agroup-neighbors-indexes)
-         (filter-digits-neighbors-to-symbols symbols)
-         (map #(apply str (map last %)))
-         (map #(Integer. %))
-         ; (reduce +)
-         )))
+                 #(= % \*) char-matrix)]
+    (as-> char-matrix v
+      (filter-chars-with-index digit? v)
+      (agroup-neighbors-indexes v)
+      (agroup-digits-neighbors-to-symbols symbols v)
+      (dissoc v nil)
+      (vals v)
+      (filter #(= (count %) 2) v)
+      (map #(map (fn [n]
+                   (apply str (map last n))) %) v)
+      (map #(map (fn [n]
+                   (Integer. n)) %) v)
+      (map #(reduce * %) v)
+      (reduce + v))))
 
 (defn filter-chars-with-index [f coll]
   (let [digits (atom [])]
-    (map-matrix-indexed
+    (mapv-matrix-indexed
      #(when (f %3) (swap! digits conj [[%1 %2] %3])) coll)
     @digits))
 
-(defn map-matrix-indexed [f coll]
+(defn mapv-matrix-indexed [f coll]
   (loop [f f row 0 col 0 coll coll]
     (if (nil? (get-in coll [row col]))
       coll
@@ -66,8 +70,8 @@
   (= (last (first elm))
      (dec (last (first next-elm)))))
 
-(defn filter-digits-neighbors-to-symbols [symbols digits]
-  (filter #(symbol-adjacent? symbols %) digits))
+(defn agroup-digits-neighbors-to-symbols [symbols digits]
+  (group-by #(symbol-adjacent? symbols %) digits))
 
 (defn symbol-adjacent? [symbols digits-group]
   (some (fn [symbol]
@@ -77,10 +81,11 @@
                  (inc (ffirst symbol)))
             (some
              (fn [digit]
-               (between?
-                (dec (last (first symbol)))
-                (last (first digit))
-                (inc (last (first symbol)))))
+               (when
+                (between?
+                 (dec (last (first symbol)))
+                 (last (first digit))
+                 (inc (last (first symbol)))) (keyword (str (first symbol)))))
              digits-group)))
         symbols))
 

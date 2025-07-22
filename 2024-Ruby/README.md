@@ -1,12 +1,12 @@
-> # Clojure Advent Of Code 2023
-This is a collection of solutions made by me using the **Clojure** programming language
+> # Ruby Advent Of Code 2024
+This is a collection of solutions made by me using the **Ruby** programming language
 
 ## Roadmap
 
-- <s>day 1</s>
-- <s>day 2</s>
-- <s>day 3</s>
-- <s>day 4</s>
+- day 1
+- day 2
+- day 3
+- day 4
 - day 5
 - day 6
 - day 7

@@ -3,8 +3,8 @@ This is a collection of solutions made by me using the **Ruby** programming lang
 
 ## Roadmap
 
-- day 1
-- day 2
+- ~~day 1~~
+- ~~day 2~~
 - day 3
 - day 4
 - day 5
